@@ -1,7 +1,6 @@
 #include "OLED.h"
 #include "MPU6050.h"
 
-//TODO: 完成灰度传感器的驱动
 //GSS->需要四个IO口
 // #include "GRAYSCALE.h"
 
@@ -9,7 +8,6 @@
 #include "TIM.h"
 #include "MOTOR.h"
 #include "PID.h"
-#include "math.h"
 
 float dt = 0.01f; // 10ms
 float yaw = 0.0f;
@@ -29,13 +27,12 @@ int main()
     MPU6050_init();
     ENCODER_L_Init();
     MOTOR_Init();
-    //TODO: 初始化灰度传感器
-    //TODO: PID参数的调试
-    PID_Init(&pid_v_L, 0.3f, 0.3f, 0.2f, 900.0f, 900.0f);
-    PID_Init(&pid_v_R, 0.3f, 0.3f, 0.2f, 900.0f, 900.0f);
-    PID_Init(&pid_yaw, 1.5f, 0.0f, 0.0f, 80.0f, 80.0f);
+    PID_Init(&pid_v_L, 1.0f, 0.0f, 0.0f, 750.0f, 750.0f);
+    PID_Init(&pid_v_R, 1.0f, 0.0f, 0.0f, 500.0f, 500.0f);
+    PID_Init(&pid_yaw, 1.0f, 0.0f, 0.0f, 100.0f, 100.0f);
     //TODO: 完成setpoint的设置
-    pid_v_L.setpoint = 500.0f;
+    pid_v_L.setpoint = 350.0f;
+    // pid_yaw.setpoint = yaw_setpoint;
     offset_z=MPU_GetOffset_z();
     
 
@@ -69,7 +66,7 @@ void TIM4_IRQHandler()
     {
         t=PID_Compute(&pid_v_L, ENCODER_L_GetCount());
         MOTOR_SetSpeed((int16_t)t,1);
-        MOTOR_SetSpeed((int16_t)PID_Compute(&pid_v_R, ENCODER_R_GetCount()),2);
+        // PID_Compute(&pid_v_R, ENCODER_R_GetCount());
 
         if(count>=2){
             count=0;
@@ -80,8 +77,7 @@ void TIM4_IRQHandler()
             else if (yaw < -180.0f)
                 yaw += 360.0f;
 
-            pid_v_L.setpoint=1- tan((yaw_setpoint - yaw)/57.3f);
-            pid_v_R.setpoint=1+ tan((yaw_setpoint - yaw)/57.3f);
+            pid_v_L.setpoint=PID_Compute(&pid_yaw, yaw)*50;
         }
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
     }
