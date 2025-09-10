@@ -1,6 +1,6 @@
 /**************************************************************
  * @file    GRAYSCALE.h
- * @brief   实现灰度传感器的读取
+ * @brief   实现四路灰度传感器的读取
  * @version 0.0
  * @date    2025.9.9
  * @author  jw
@@ -16,6 +16,7 @@
 #include "stm32f10x_exti.h"
 #include "misc.h"
 
+void Gray_scale_sensor_init();
 uint16_t Gray_scale_sensor_get();
 
 
