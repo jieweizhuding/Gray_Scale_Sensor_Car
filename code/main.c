@@ -36,6 +36,7 @@ int main()
     PID_Init(&pid_yaw, 1.5f, 0.0f, 0.0f, 80.0f, 80.0f);
     //TODO: 完成setpoint的设置
     pid_v_L.setpoint = 500.0f;
+    pid_v_R.setpoint = 500.0f;
     offset_z=MPU_GetOffset_z();
     
 
